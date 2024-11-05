@@ -16,27 +16,34 @@ public class StateMachine : MonoBehaviour
     public State state;
 
     Rigidbody rb;
+    PlayerController player;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        player = FindObjectOfType<PlayerController>();
+    }
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-
         NextState();
     }
+
     void NextState()
     {
         switch (state)
         {
             case State.Patrol:
-                StartCoroutine(PatrolState());
+                StartCoroutine( PatrolState() );
                 break;
             case State.Investigating:
-                StartCoroutine(InvestigatingState());
+                StartCoroutine( InvestigatingState() );
                 break;
             case State.Chasing:
-                StartCoroutine(ChasingState());
+                StartCoroutine( ChasingState() );
                 break;
             case State.Attack:
+                StartCoroutine(AttackState());
                 break;
             case State.Captured:
                 break;
@@ -54,10 +61,21 @@ public class StateMachine : MonoBehaviour
 
         while(state == State.Patrol) // "Update() loop"
         {
- 
+            transform.rotation *= Quaternion.Euler(0f, 50f * Time.deltaTime, 0f);
+
+            //Direction from A to B
+            // B - A
+            Vector3 directionToPlayer = player.transform.position - transform.position;
+            directionToPlayer.Normalize();
+            //Dot product parameters should be "normalised"
+            float result = Vector3.Dot(transform.forward, directionToPlayer);
+
+            if(result >= 0.95f)
+            {
+                state = State.Chasing;
+            }
             yield return null; // Wait for a frame
         }
-
 
         //tear down/ exit  point  / OnDestory()
         Debug.Log("Exiting Patrol State");
@@ -100,17 +118,73 @@ public class StateMachine : MonoBehaviour
             transform.localScale = new Vector3(wave, wave2, wave);
 
 
-            float shimmy = Mathf.Cos(Time.time * 30f) * 10f + 10f;
+            float shimmy = Mathf.Cos(Time.time * 30f) * 10f + 15f;
             //choose transform movement or rigidbody movement
             //transform.position += transform.right * shimmy * Time.deltaTime;
-            rb.AddForce(Vector3.right * shimmy);
 
-            yield return null; // Wait for a frame
+            Vector3 directionToPlayer = player.transform.position - transform.position;
+            //directionToPlayer.Normalize();
+            float angle = Vector3.SignedAngle(transform.forward, directionToPlayer, Vector3.up);
+
+            if(angle > 0)
+            {
+                transform.rotation *= Quaternion.Euler(0f, 50f * Time.deltaTime, 0f);
+            }
+            else
+            {
+                transform.rotation *= Quaternion.Euler(0f, -50f * Time.deltaTime, 0f);
+            }
+
+            if (rb.velocity.magnitude < 5f)
+            {
+                rb.AddForce(transform.forward * shimmy, ForceMode.Acceleration);
+            }
+
+            if(directionToPlayer.magnitude < 2f)
+            {
+                state = State.Attack;
+            }
+            else if(directionToPlayer.magnitude > 10f)
+            {
+                state = State.Patrol;
+            }
+
+            yield return new WaitForFixedUpdate(); // Wait for the next fixed up
         }
 
 
         //tear down/ exit  point  / OnDestory()
         Debug.Log("Exiting Chasing State");
+        NextState();
+    }
+
+
+
+    IEnumerator AttackState()
+    {
+        //Setup /entry point / Start()/Awake()
+        Debug.Log("Entering Attack State");
+
+
+        while (state == State.Attack) // "Update() loop"
+        {
+            Vector3 scale = transform.localScale;
+            scale.z = Mathf.Cos(Time.time * 20f) * 3f + 1f;
+            transform.localScale = scale;
+
+
+
+            Vector3 directionToPlayer = player.transform.position - transform.position;
+            if(directionToPlayer.magnitude > 3f)
+            {
+                state = State.Chasing;
+            }
+
+            yield return null; // Wait for a frame
+        }
+
+        //tear down/ exit  point  / OnDestory()
+        Debug.Log("Exiting Attack State");
         NextState();
     }
 }
