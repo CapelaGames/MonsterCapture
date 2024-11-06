@@ -17,7 +17,6 @@ public class PlayerController : MonoBehaviour
     public Rigidbody rb;
     public LayerMask groundMask;
 
-    public Vector2 input;
 
     private void Start()
     {
@@ -27,10 +26,32 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         Jump();
+
     }
 
-    //private bool hasCoyoted = false;
-    private void Jump()
+    private void FixedUpdate()
+    {
+        Movement();
+
+    }
+
+    Vector3 currentVelocity;
+
+    private void Movement()
+    {
+        Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"),0f,Input.GetAxisRaw("Vertical"));
+        if(input.magnitude > 1) 
+        {
+            input.Normalize();
+        }
+        input *= speed * Time.deltaTime;
+        rb.velocity = Vector3.SmoothDamp(rb.velocity, new Vector3(input.x, rb.velocity.y,input.z),
+                                        ref currentVelocity, 0.1f);
+
+    }
+
+//private bool hasCoyoted = false;
+private void Jump()
     {
         if(Input.GetKeyDown(KeyCode.Space))
         {
@@ -60,7 +81,7 @@ public class PlayerController : MonoBehaviour
 
         if ((groundMask & goLayer) != 0)
         {
-            Debug.Log("Grounded");
+            //Debug.Log("Grounded");
 
             isGrounded = true;
             lastGroundedTime = Time.time;

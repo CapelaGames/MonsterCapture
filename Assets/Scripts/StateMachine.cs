@@ -165,14 +165,11 @@ public class StateMachine : MonoBehaviour
         //Setup /entry point / Start()/Awake()
         Debug.Log("Entering Attack State");
 
-
         while (state == State.Attack) // "Update() loop"
         {
             Vector3 scale = transform.localScale;
             scale.z = Mathf.Cos(Time.time * 20f) * 3f + 1f;
             transform.localScale = scale;
-
-
 
             Vector3 directionToPlayer = player.transform.position - transform.position;
             if(directionToPlayer.magnitude > 3f)
