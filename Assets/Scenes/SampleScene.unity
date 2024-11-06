@@ -183,13 +183,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e32ad7526f8150742af29e0978a5e462, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 50
+  speed: 500
   jumpPower: 5
   gravity: 5
   rb: {fileID: 647823389}
   groundMask:
     serializedVersion: 2
     m_Bits: 64
+  airControlMultiplier: 1.6
+  maxSpeed: 10
+  camera: {fileID: 0}
 --- !u!136 &647823391
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -457,13 +460,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2654812, y: -0, z: -0, w: 0.9641161}
-  m_LocalPosition: {x: -1.07, y: 7.1, z: -8.68}
+  m_LocalRotation: {x: -0.17567027, y: 0.8208752, z: -0.42351404, w: -0.34049922}
+  m_LocalPosition: {x: 8.627417, y: 11.31783, z: 10.612711}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 30.791, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 90}
 --- !u!1 &988098528
 GameObject:
   m_ObjectHideFlags: 0
@@ -721,8 +724,8 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 963194228}
   - {fileID: 705507995}
   - {fileID: 988098532}
   - {fileID: 647823394}
   - {fileID: 1878751397}
+  - {fileID: 963194228}
